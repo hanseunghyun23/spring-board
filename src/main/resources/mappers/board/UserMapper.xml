@@ -1,0 +1,30 @@
+<mapper namespace="com.board.springboard.model.mapper.UserMapper">
+
+    <!-- 회원가입 -->
+    <insert id="회원가입" parameterType="com.board.springboard.model.dto.User">
+        INSERT INTO users (name, email, create_at)
+        VALUES (#{name}, #{email}, NOW())
+    </insert>
+
+    <!-- 이메일 중복 체크 -->
+    <select id="이메일중복체크" parameterType="String" resultType="int">
+        SELECT COUNT(*) FROM users WHERE email = #{email}
+    </select>
+
+    <!-- TODO 2. 로그인 SQL 을 작성하시오 -->
+    <!-- 조건 : id = 로그인 / parameterType = String / resultType = User 전체 경로 -->
+    <select id="로그인" parameterType="String" resultType="com.board.springboard.model.dto.User">
+        <!-- TODO 3. users 테이블에서 email 이 일치하는 유저를 조회하는 SQL 을 작성하시오 -->
+        SELECT *
+        FROM users
+        WHERE email = #{email}
+    </select>
+
+    <select id="email" parameterType="String" resultType="String">
+        <!-- TODO 3. users 테이블에서 email 이 일치하는 유저 전체를 조회하시오 -->
+        SELECT *
+        FROM users
+        WHERE email = #{email}
+    </select>
+
+</mapper>

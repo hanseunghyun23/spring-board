@@ -93,26 +93,30 @@ public class UserController {
         session.invalidate(); // 세션 전체 초기화
         return "redirect:/";
     }
+
+
     @GetMapping("/user/find-email")
-    public String findEmaillView("")
-    {
+    public String findEmailView() {
         return "user/findUser";
     }
 
     @PostMapping("/user/find-email")
+    public String findEmail(@RequestParam String name, Model model) {
+        User 유저데이터 = userService.이메일로유저찾기(name);
 
-        public String findEmail(@RequestParam String name, Model model)
-        {
-            User 유저데이터 = userService.이메일로유저찾기(name);
-
-
+        if (유저데이터 != null) {
+            model.addAttribute("email", 유저데이터.getEmail());
+        } else {
+            model.addAttribute("error", "해당 이름으로 가입된 이메일이 없습니다.");
         }
+        return "user/findUser";
     }
 
-    //미완성된 기능
-    //접근제어자 반환타입 기능명칭(매개변수처리);
-
-
-    //완성된 기능{} 내부에 기능이 작성되지 않더라도 {} 존재 자체만으로 완성된 기능
-    //  접근제어자 반환타입 기능명칭(매개변수처리){끼능자리};
 }
+/*
+// 미완성된 기능
+ 접근제어자 반환타입 기능명칭(매개변수자리);
+
+// 완성된 기능 {}내부에 기능이 작성되지 않더라도 {} 존재 자체만으로 완성된 기능
+ 접근제어자 반환타입 기능명칭(매개변수자리){기능자리}
+ */

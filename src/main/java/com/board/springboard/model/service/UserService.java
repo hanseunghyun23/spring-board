@@ -13,10 +13,11 @@ public class UserService {
     /**
      * 이메일 중복 여부를 확인하는 메서드
      * DB에 동일한 이메일이 존재하면 true, 존재하지 않으면 false 반환
+     *
      * @param email 중복 확인할 이메일 주소
-     * @return   true = 이미 사용중인 이메일 / false = 사용 가능한 이메일
+     * @return true = 이미 사용중인 이메일 / false = 사용 가능한 이메일
      */
-    public boolean 이메일중복체크기능(String email){
+    public boolean 이메일중복체크기능(String email) {
        /*
         int 이메일중복체크(String email); -> 결과는 count에 해당하는 숫자로 나온다.
 
@@ -41,6 +42,7 @@ public class UserService {
     /**
      * 회원가입을 처리하는 메서드
      * 이메일 중복 확인 후 중복이 아닐 경우에만 DB에 회원 정보를 저장
+     *
      * @param user 가입할 회원 정보가 담긴 객체(name, email)
      * @return true = 회원가입 성공 / false = 이메일 중복으로 인한 가입 실패
      */
@@ -48,7 +50,7 @@ public class UserService {
         // 이메일이 중복일 경우 회원가입을 할 수 없도록 회원가입 중단
         // 18 번 째 줄에서 개발자가 만들어놓은 이메일 존재 유무 확인하는 기능을 사용해서
         // 만약에 소비자가 작성한 이메일이 존재하는게 사실이라면
-        if(이메일중복체크기능(user.getEmail())) {
+        if (이메일중복체크기능(user.getEmail())) {
             return false; // 회원가입을 여기서 중단하겠어요.^^ 회원가입 못하겠네요. 를 반환
         }
         // 이메일 중복체크기능이 false 이고 이메일이 sql에 존재하지 않는게 사실이라면
@@ -61,6 +63,7 @@ public class UserService {
     /**
      * 로그인 처리 메서드
      * 이메일로 유저를 조회하여 존재하면 해당 유저 반환, 없으면 null 반환
+     *
      * @param email 로그인 시 입력한 이메일
      * @return 조회된 User 객체 / 존재하지 않으면 null
      */
@@ -68,4 +71,15 @@ public class UserService {
         return userMapper.로그인(email);
     }
 
+
+    /**
+     * 이메일로 유저를 찾는 메서드
+     * 이메일이 존재하면 해당 유저 정보 반환, 없으면 null 반환
+     *
+     * @param email 찾을 유저의 이메일
+     * @return 조회된 User 객체 / 없으면 null
+     */
+    public User 이메일로유저찾기(String email) {
+        return userMapper.이메일로유저찾기(email);
+    }
 }

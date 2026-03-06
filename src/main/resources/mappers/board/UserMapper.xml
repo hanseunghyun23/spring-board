@@ -32,4 +32,12 @@
         FROM users
         WHERE email = #{email}
     </select>
+
+
+    <update id="프로필사진수정" parameterType="com.board.springboard.model.dto.User">
+        UPDATE users
+        SET profile_img = #{profile_img}
+        WHERE id = #{id}
+        <!-- WHERE를 작성하지 않으면 users 테이블에 존재하는 모든 프로필이미지 수정 -->
+    </update>
 </mapper>

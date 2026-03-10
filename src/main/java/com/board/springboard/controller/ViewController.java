@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -49,8 +50,10 @@ public class ViewController {
         this.boardService = boardService; -> 클래스 필드에 직접 대입해서 사용하겠다.
     }
      */
+
     /**
      * 메인 페이지로 이동
+     *
      * @return index.jsp
      */
     @GetMapping("/")
@@ -62,11 +65,13 @@ public class ViewController {
         ${board.title}
     </a>
      */
+
     /**
      * 게시물 상세 조회 페이지 이동
+     *
      * @param board_no 조회할 게시물 번호
      * @param model    단일 게시물 데이터를 jsp로 전달하기 위한 객체
-     * @return          board/detail.jsp
+     * @return board/detail.jsp
      */
     @GetMapping("/board/detail")
     public String detailView(@RequestParam("no") int board_no, Model model) {
@@ -76,10 +81,12 @@ public class ViewController {
         model.addAttribute("board", boardData);
         return "board/detail";
     }
+
     /**
      * 게시물 목록 조회 및 페이지 이동
+     *
      * @param model 게시물 리스트 데이터를 전달하기 위한 객체
-     * @return      board/product_list.jsp
+     * @return board/product_list.jsp
      */
 
     @GetMapping("/board/list")
@@ -93,30 +100,73 @@ public class ViewController {
          */
         return "board/list";
     }
+
     /**
      * 게시물 작성 페이지 이동
+     *
      * @return board/write.jsp
      */
     @GetMapping("/board/write")
     public String writeView() {
         return "board/write";
     }
+
     /**
      * 게시물 작성 처리 (DB저장)
+     *
      * @param board 작성된 데이터가 담긴 DTO
-     * @return      게시물 목록으로 리다이렉트
+     * @return 게시물 목록으로 리다이렉트
+     */
+    /**
+     *
+     *
+     * @param board 작성된 데이터가 담긴 DTO
+     * 클라이언트가 write.jsp 에서 작성한 DTO
+     *              wrtie.jsp의 form에서 전송된 게시물 데이터(title, writer, content)
+     *              Spring 이 자동으로 Board 객체의 필드에 매핑하여 주입된다
+     * POST 방식으로 전송하면, 해당 데이터를 받아 DB 로
+     * @param imageFile &lt; input type="file" name="imageFile"&gt; 로 전송된 첨부 이미지 파일
+     *                  이미지를 첨부하지 않아도 게시물 작성이 가능하도록 required= false 로 설정
+     *                  이미지가 없을 경우 null 또는 비어있는 상태로 전달
+     * @return "redirect:/board/list"
+     * 게시물 저장 완료 후 게시물 목록으로 리다이렉트
+     * redirect: 를 붙이면 서버가 클라이언트에게 해당 주소로 다시 요청하도록 명령한다
+     *
+     * @throws Exception 파일 저장중 IO 오류 등 예외가 발생할 경우를 대비하여 선언한다
+     *          IO Input Output 파일 읽고, 파일 저장 데이터 받기 보내기 입력 출력 조회 저장 의미
+     * @RequestParam 클라이언트가 URL 또는 form 으로 보낸 데이터를 메서드 매개변수에 쏮아주는 어노테이션  <br>
+     * 속성종류 : <br>
+     * Value :다른 속성이 없으면 기본으로 설정되는 속성이므로 작성하지 않아도 되는 값
+     *  JSP input 의 name 과 연결지을 이름   기본값  매개변수명<br>
+     * required : 필수로 서버나 백엔드에 데이터를 전달해야하는 필수 여부 유무 기본 세팅은 true로 되어있다
+     * defaultValue: 값이 없을 때 기본으로 설정해놓을 값
+     * @RequestParam(required=false) 이미지가 없어도 게시물 작성 가능하도록 설정
+     * @RequestParam()
+     * jsp 에서 input name="imageFile" 인 이미지 파일을 가져와서 백엔드로 넣을 것이지만 필수는 아니다
+     * 굳?이 이미지 데이터가 있어야 하는 것은 아니다
+     * required=false 를 쓰지 않으면 기본적으로 모든 매개변수 속성은 required=true로 되어있다
      */
 
+   /* @PostMapping("/board/write")
+    public String wrtieBoard(Board board, @RequestParam(required = false,
+            value = "imageFile") MultipartFile imageFile) throws Exception {
+        boardService.writeBoard(board, imageFile);
+        return "redirect:/board/list";
+    }*/
+
     @PostMapping("/board/write")
-    public String wrtieBoard(Board board) {
-        boardService.writeBoard(board);
+    public String wrtieBoard(Board board, @RequestParam(required = false
+            )List <MultipartFile> imageFiles) throws Exception {
+        boardService.writeBoard(board, imageFiles);
         return "redirect:/board/list";
     }
+
     /**
      * 게시물 수정 이동 (기존 데이터 조회 포함)
+     *
      * @param board_no 수정해야하는 게시물 번호
      * @param model    기존 데이터를 전달하기 위한 객체
-     * @return         board 폴더 안에 존재하는 edit 파일로 이동
+     * @return board 폴더 안에 존재하는 edit 파일로 이동
      */
     @GetMapping("/board/edit")
     public String editView(@RequestParam("no") int board_no, Model model) {
@@ -127,9 +177,10 @@ public class ViewController {
 
     /**
      * 게시물 삭제 처리
+     *
      * @param board_no : JSP 에서 'no' 라는 이름으로 보낸 게시물 번호
      * @return : 삭제 후 게시물 목록 페이지로 이동
-     *
+     * <p>
      * redirect : 서버가 웹 사이트에게 다른 주소로 다시 가라고 명령하는 것,
      * 사용자가 보낸 요청을 서버가 처리하고 나서, 현재 페이지에 머무는 것이 아니라
      * 새로운 페이지를 처음부터 다시 호출하게 만들 때 사용

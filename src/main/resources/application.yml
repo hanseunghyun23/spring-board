@@ -2,19 +2,20 @@ spring:
   application:
     name: spring-board
 
-    config:
-      import: optional:file./config.yml
+  config:
+    import: optional:file:./config.yml
 
   mvc:
     view:
       prefix: /WEB-INF/views/
       suffix: .jsp
+
   datasource:
     url: ${db.url}
     username: ${db.username}
     password: ${db.password}
     driver-class-name: com.mysql.cj.jdbc.Driver
-  servlet:
+servlet:
     encoding:
       charset: utf-8
       force: true
@@ -29,18 +30,5 @@ mybatis:
 
 file:
   upload:
-    path: ${file.upload.path}
+    path: ${upload.profile-path}
     board-path: ${upload.board-path}
-
-
-
-
-
-
-
-
-
-
-
-
-

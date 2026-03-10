@@ -17,7 +17,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor // new 자바객체파일() 생략
-public class BoardService {
+public class BoardImageService {
     // 보드 매퍼 에 작성된 기능을 활용하겠다.
     // 보드 매퍼 는 xml에서 가져온 SQL 기능을 보유하고 있는 명칭들의 집합소!
     private final BoardMapper boardMapper;

@@ -44,7 +44,7 @@ AI에게 도움을 요청해서 필요한 모듈에 대하여 전달받을 수 �
         <c:forEach var="board" items="${boardLists}">
             <tr>
                 <td>${board.board_no}</td>
-                <td><a href="/board.dtail?mp class="text-decoration-none">${board.title}</a></td>
+                <td><a href="/board.detail?mp class="text-decoration-none">${board.title}</a></td>
 
                 <td>${board.writer}</td>
                 <td>${board.created_at}</td>

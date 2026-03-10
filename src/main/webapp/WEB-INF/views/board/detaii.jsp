@@ -16,6 +16,7 @@
 
         <div class="text-muted mb-4">
             작성자: ${board.writer} | 작성일: ${created_at} | 조회수: ${board.view_count}
+            작성자: ${board.writer} | 작성일: ${board.created_at} | 조회수: ${board.view_count}
         </div>
 
         <hr>
@@ -24,7 +25,11 @@
             ${board.content}
         </div>
         <c:if test="${not empty board.attach_img}">
-            <img src="${board.attach_img}">
+        <img src="${board.attach_img}">
+        <c:if test="${not empty images}">
+        <c:forEach var="이미지한장씩" items="${images}">
+        <img src="${이미지한장씩.img_path}" class="img-fluid">
+        </c:forEach>
         </c:if>
         <hr>
 
@@ -34,28 +39,14 @@
             <a href="/board/edit?no=${board.board_no}" class="btn btn-warning">수정</a>
 
 
-            <%-- <button type="button" class="btn btn-danger"
-                    onclick="location.href='/board/delete?no=${board.board_no}'">삭제</button>
+                <%-- <button type="button" class="btn btn-danger"
+                        onclick="location.href='/board/delete?no=${board.board_no}'">삭제</button>
 
-                    주석에서 <!-- --> 과 < % -- -- % > 차이
-            < % -- -- % > 은 자바에서 가져오는 변수를 작성한 공간까지 모두 전체 주석 ${ }
+    @@ -42,7 +39,6 @@
 
-            <! --  -- >   은 자바에서 가져오는 변수는 주석처리가 안됨 jsp 확장자 안에서는 되도록이면 % 주석 사용
-            --%>
+                <! --  -- >   은 자바에서 가져오는 변수는 주석처리가 안됨 jsp 확장자 안에서는 되도록이면 % 주석 사용
+                --%>
 
             <button type="button" class="btn btn-danger"
-                    onclick="게시물삭제기능${board.board_no}">삭제
+                    onclick="게시물삭제기능(${board.board_no})">삭제
             </button>
-        </div>
-    </div>
-</div>
-<script>
-    function 게시물삭제기능(board_no) {
-        if (confirm("정말 삭제하시겠습니까?")) {
-            location.href = "/board/delete?no=" + board_no;
-        }
-    }
-</script>
-
-</body>
-</html>

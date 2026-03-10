@@ -9,18 +9,18 @@
         from products
         order by id desc;
     </select>
-    <select id="제품단건" resultType="com.board.springboard.model.mapper.Product">
+    <select id="제품단건" resultType="com.board.springboard.model.dto.Product">
         select  *
         from products
         where  id = #{id}
     </select>
 
-    <insert id="제품추가" parameterType="com.board.springboard.model.mapper.Product">
+    <insert id="제품추가" parameterType="com.board.springboard.model.dto.Product">
         INSERT INTO products(name, price, stock)
         values (#{name}, #{price},#{stock})
     </insert>
 
-    <insert id="제품수정" parameterType="com.board.springboard.model.mapper.Product">
+    <insert id="제품수정" parameterType="com.board.springboard.model.dto.Product">
         UPDATE products
         SET name= #{name}, price = #{price}, stock=#{stock}
         WHERE id = #{id}

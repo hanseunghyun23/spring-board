@@ -70,7 +70,7 @@
 
 -->
             <div class="text-center mt-4">
-                <button type="submit" class="btn btn-dark px-4">저장하기</button>
+                <button type="button" class="btn btn-dark px-4" onclick="저장하기기능()">저장하기</button>
                 <!--
                 <button> 태그 type = submit  button  reset
 
@@ -134,6 +134,33 @@
             // <>태그.style. 이후 부터는 적용할 수 있는 스타일에 대하여 제안을 제공해준다.
             input.value = ""; // input 내에서  5개 이상 선택된 파일들을 모두 제거한다.
             return; // 5개 이상이 될경우 추가할 필요도없이 돌려보내기
+        }
+
+        function 저장하기기능() {
+            const 제목    = document.querySelector("input[name='title']");
+            const 작성자  = document.querySelector("input[name='writer']");
+            const 내용    = document.querySelector("textarea[name='content']");
+
+            // ① 제목이 비어있으면 경고 후 포커스, 함수 종료
+                if(제목.value.trim()===""){
+                    alert("제목이 비어있습니다");
+                    저장하기기능.close();}
+
+            // ② 작성자가 비어있으면 경고 후 포커스, 함수 종료
+            if(작성자.value.trim()===""){
+                alert("작성자를 입력해주세요");
+                저장하기기능.close();}
+
+            // ③ 내용이 비어있으면 경고 후 포커스, 함수 종료
+            if(내용.value().trim()===""){
+                alert("내용이 비어있습니다");
+                저장하기기능.close();
+            return;}
+
+            // ④ 검증 통과 시 form 제출
+            document.querySelector("form").submit()
+            //quereselect 안에는 태그이름, 이름속성,아이디속성,클래스 속성
+            //모든 것을 작성할 수 있다             .아이디이름 #클래스이름
         }
 
         이미지개수.textContent = "선택된 이미지 : " + 파일들.length + "장";

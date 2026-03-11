@@ -17,7 +17,9 @@
                 <input type="number" name="stock" class="form-control" required>
             </div>
             <div class="d-grid gap-2">
-                <button type="submit" class="btn btn-dark">등록</button>
+                <button type="submit"
+                        class="btn btn-dark">
+                    등록</button>
                 <a href="/product/list" class="btn btn-outline-secondary">취소</a>
             </div>
         </form>

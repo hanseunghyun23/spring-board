@@ -1,5 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<html>
+
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <!DOCTYPE html>
@@ -15,17 +15,17 @@
 <div class="container mt-5" style="max-width: 100%">
     <div class="fw-bold mb-4">게시물 수정</div>
     <form <!--action="/board/edit" method="post">-->
-        <input type="hidden" name="board_no" value="${board.board_no}">
+        <input name="board_no" value="${board.board_no}">
 
         <div class="mb-3">
             <label for="title" class="form-label fw-semibold">제목</label>
-            <input type="text" id="title" name="title" class="form-control" value="${board.title}" required>
+            <input type="text" id="title" name="title" class="form-control" value="${board.title}" >
         </div>
 
         <div class="mb-3">
             <label for="content" class="form-label fw-semibold">내용</label>
             <input type="text" id="content" name="content" class="form-control" rows="10" value="${board.content}"
-                   required>
+                   >
         </div>
 
         <div class="text-end">
@@ -41,6 +41,20 @@
 
     */
     function 수정완료버튼기능(){
+
+        const 제목 = document.getElementById("title");
+        const 콘텐츠 = document.getElementById("content");
+        if(제목.value.trim() == ""){
+            alert("제목을 입력해주세요");
+            제목.focus();
+            return;
+        }
+
+        if(내용.value.trim() == ""){
+            alert("내용을 입력해주세요");
+            콘텐츠.focus();
+            return;
+        }
         const 백엔드로_전달할_데이터들={
             /*JSON 형식처럼 키이름: 키에 들어갈 데이터*/
             board_no: document.getElementById("board_no").value,
@@ -50,7 +64,7 @@
         //데이터 준비되었으면 백엔드로 전송하는 작업 진행
         fetch("/board/edit",{
             method:'PUT',
-            headers{"Content-Type" "application/json"},
+            headers{"Content-Type" ,"application/json"}
             body: JSON.stringify(백엔드로_전달할_데이터들)
         })
             .then(res =>res.json())
@@ -59,6 +73,6 @@
             })
             .catch(err=> console.log("백엔드전송을 실패했다면 왜 실패했나요?! : ",err));
     }
-{}</script>
+</script>
 </body>
 </html>

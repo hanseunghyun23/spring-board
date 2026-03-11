@@ -7,9 +7,7 @@ import com.board.springboard.model.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -181,10 +179,12 @@ public class ViewController {
         return "board/edit";
     }
 
-    @PostMapping("/board/edit")
-    public String editBoard(Board board) {
-        boardService.updateBoard(board);
-        return "redirect:/board/detail?no=" + board.getBoard_no();
+    @PutMapping("/board/edit") //수정할 데이터만 DB에 수정, 전달할것이다.
+    @ResponseBody //페이지 이동을 하지 않을 것이고, 수정된 내용만 페이지로 다시 전달할 것이다.
+    public Board editBoard(Board board) {
+        boardService.updateBoard(board); //Service에서 DB에 저장된 데이터를 클라이언트가 요청하는대로 수정 작업 진행
+        return board; //수정 완료된 데이터를 수정완료했으니 데이터 확인하세요. 하고 데이터만 기존 페이지로 전달하겠다
+      //  return "redirect:/board/detail?no=" + board.getBoard_no();
     }
 
     /**

@@ -17,12 +17,12 @@ public class ProductController {
 
     private final ProductService productService;
 
-    /** @RequestMapping 이 존재할 경우 아래에 작성한 모~든 매핑 앞에는
-     * /product 주소가 자동으로 붙는다.
-     * @GetMapping("/list") 작성하더라도 주소창에서는 /product/list 형태로 들어가야지 제품 목록들을 확인할 수 있다.
-     *
+    /**
      * @param model jsp 로 sql에서 가져온 데이터를 전달해주기위한 운반 수단
      * @return 클라이언트가 /product/list 주소로 접속했을 경우 보여질 jsp 파일 선택하여 보여주겠다.
+     * @RequestMapping 이 존재할 경우 아래에 작성한 모~든 매핑 앞에는
+     * /product 주소가 자동으로 붙는다.
+     * @GetMapping("/list") 작성하더라도 주소창에서는 /product/list 형태로 들어가야지 제품 목록들을 확인할 수 있다.
      */
     @GetMapping("/list")
     public String 제품목록(Model model) {
@@ -35,6 +35,7 @@ public class ProductController {
     /**
      * GET /product/add 주소로 클라이언트가 접속하게 되면
      * 제품추가이기 때문에 SQL에서 가져올 데이터가 없으므로 Model model 사용하지 않는다.
+     *
      * @return webapp/WEB-INF/views/product/addForm.jsp 페이지를 반환처리 한다.
      */
     @GetMapping("/add")
@@ -42,7 +43,6 @@ public class ProductController {
         return "product/addForm";
     }
 
-    // TODO 8. POST /product/add → 제품 추가 처리 후 redirect
     @PostMapping("/add")
     public String 제품추가처리(@ModelAttribute Product product,
                          RedirectAttributes redirectAttributes) {
@@ -52,7 +52,6 @@ public class ProductController {
         return "redirect:/product/list";
     }
 
-    // TODO 9. GET /product/edit?id=1 → 단건 조회 후 editForm.jsp 반환
     // 조건 : @RequestParam 으로 id 받기
     @GetMapping("/edit") /* 주소에서 ? 로 시작하는 경로는 Mapping 내에 작성하지 않는다. */
     public String 제품수정폼(@RequestParam int id, Model model) {
@@ -61,46 +60,43 @@ public class ProductController {
         return "product/editForm";
     }
 
-    // TODO 10. 수정 Mapping 을 Put으로 교체하고 , 수정된 product를 데이터 수정페이지로 전달로 교체하기
-  /*  @PostMapping("/edit")  // Post / Put / Patch 차이점을 인지하고 사용하자 제품 수정하는데 문제는 없다.
-    public String 제품수정처리(@ModelAttribute Product product,
-                         RedirectAttributes redirectAttributes) {
-        // PostMapping 의 경우 제품을 수정한다음 전달
-        productService.제품수정(product);
-        redirectAttributes.addFlashAttribute("msg", "제품이 수정되었습니다.");
-        return "redirect:/product/list";
-    }*/
-
     @PutMapping("/edit")
-    @ResponseBody// Post / Put / Patch 차이점을 인지하고 사용하자 제품 수정하는데 문제는 없다.
-    public String 제품수정처리(@ModelAttribute Product product,
-                         RedirectAttributes redirectAttributes) {
-        // PostMapping 의 경우 제품을 수정한다음 전달
+    @ResponseBody
+    public Product 제품수정처리(@ModelAttribute Product product,
+                          RedirectAttributes redirectAttributes) {
         productService.제품수정(product);
         redirectAttributes.addFlashAttribute("msg", "제품이 수정되었습니다.");
-        return "redirect:/product/list";
+        return product;
     }
 
-
-    // TODO 11. GET /product/delete?id=1 → 삭제 처리 후 redirect
-   /* @GetMapping("/delete") // ? 이후는 Mapping 에서 작성하지 않는다.
+    /*
+        @PostMapping("/edit")  // Post / Put / Patch 차이점을 인지하고 사용하자 제품 수정하는데 문제는 없다.
+        public String 제품수정처리(@ModelAttribute Product product,
+                             RedirectAttributes redirectAttributes) {
+            // PostMapping 의 경우 제품을 수정한다음 전달
+            productService.제품수정(product);
+            redirectAttributes.addFlashAttribute("msg", "제품이 수정되었습니다.");
+            return "redirect:/product/list";
+        }
+     */
+    @DeleteMapping("/delete") // 삭제 기능이다.
+    @ResponseBody // html로 넘어가는 것이 아니라 html 기능에 대한 결과만 전달하겠다.
     public String 제품삭제처리(@RequestParam int id,
                          RedirectAttributes redirectAttributes) {
         productService.제품삭제(id);
         redirectAttributes.addFlashAttribute("msg", "제품이 삭제되었습니다.");
-        // 제품 리스트로 돌아가서 제품이 삭제되었다는 메세지를 잠깐 보기위해 redirectAttributes 로 가져온다.
-        return "redirect:/product/list";
-    }*/
-
-    @DeleteMapping("/delete") // ? 이후는 Mapping 에서 작성하지 않는다.
-    @ResponseBody //html로 넘어가는것이 아니라 html 기능에 대한 결과만 전달하겠다
-    public String 제품삭제처리(@RequestParam int id,
-                         RedirectAttributes redirectAttributes) {
-        productService.제품삭제(id);
-        redirectAttributes.addFlashAttribute("msg", "제품이 삭제되었습니다.");
-        // 제품 리스트로 돌아가서 제품이 삭제되었다는 메세지를 잠깐 보기위해 redirectAttributes 로 가져온다.
         return "ok";
     }
+/*
+    @GetMapping("/delete") // ? 이후는 Mapping 에서 작성하지 않는다.
+    public String 제품삭제처리(@RequestParam int id,
+                         RedirectAttributes redirectAttributes) {
+        productService.제품삭제(id);
+        redirectAttributes.addFlashAttribute("msg", "제품이 삭제되었습니다.");
+        // 제품 리스트로 돌아가서 제품이 삭제되었다는 메세지를 잠깐 보기위해 redirectAttributes 로 가져온다.
+        return "redirect:/product/list";
+    }
+ */
 }
 
 

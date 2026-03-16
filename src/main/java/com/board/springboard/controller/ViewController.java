@@ -120,12 +120,12 @@ public class ViewController{
 //     */
 //    @GetMapping("/board/detail")
 //    public String detailView(@RequestParam("no") int board_no, Model model) {
-         조회수 증가 및 상세 데이터 가져오기 처리
-         가져온 데이터를 board 폴더 내에 있는 detail 전달
+//         조회수 증가 및 상세 데이터 가져오기 처리
+   //      가져온 데이터를 board 폴더 내에 있는 detail 전달
 //        Board boardData = boardService.boardDetail(board_no);
 //        model.addAttribute("board", boardData);
 //
-         service 에서 컨트롤러로 가져와야한다.
+      //    service 에서 컨트롤러로 가져와야한다.
 //        List<BoardImage> 이미지들데이터 = boardImageMapper.이미지목록(board_no);
 //        model.addAttribute("images", 이미지들데이터);
 //
@@ -229,7 +229,7 @@ public class ViewController{
 //    public Board editBoard(Board board) {
 //        boardService.updateBoard(board); //Service에서 DB에 저장된 데이터를 클라이언트가 요청하는대로 수정 작업 진행
 //        return board; //수정 완료된 데이터를 수정완료했으니 데이터 확인하세요. 하고 데이터만 기존 페이지로 전달하겠다
-        return "redirect:/board/detail?no=" + board.getBoard_no();
+        //return "redirect:/board/detail?no=" + board.getBoard_no();
 //    }
 //
 //    /**

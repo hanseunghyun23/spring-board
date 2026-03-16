@@ -112,7 +112,7 @@
         </form>
     </div>
 </div>
-<script>
+<script>/*
     function 미리보기기능(input) {
         // 이미지 개수 / 5장 초과시 경고 후 선택 초기화 하거나
         // 선택된 파일마다 미리보기 생성
@@ -178,11 +178,31 @@
         }
 
         // ④ 검증 통과 시 form 제출
-        document.querySelector("form").submit();
+    //    document.querySelector("form").submit();
         // querySelect 안에는 태그이름, 이름속성, 아이디속성, 클래스속성
         // 모든 것을 작성할 수 있다.             .아이디이름  #클래스이름
-    }
 
+        const formData = new FormData(document.querySelector("form")); //파일 전송을 도와주는 javaScript 객체
+
+
+        //ai 가 추천하는 긴 로직을 작성하지 않아도
+        //Form 내부에 작성된 데이터들을 백엔드로 전송할 수 있다
+        //append 쓸 때 추가적인 세부 커스텀이 필요할때
+        fetch("/board/write",{
+          method:"post",
+          body:formData,
+
+
+        })
+            .then((res)=>res.json())
+            .then(결과 =>{
+                location.href = "/board/list";
+            })
+            .catch(err =>console.log(err));
+
+
+    }
+*/
 </script>
 </body>
 </html>

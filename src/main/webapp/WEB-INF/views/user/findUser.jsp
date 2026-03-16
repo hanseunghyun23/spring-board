@@ -13,52 +13,90 @@
     <div class="card p-4 shadow-sm">
         <h2 class="mb-4 text-center fw-bold">이메일로 유저 찾기</h2>
 
-        <!-- TODO 6. form action 주소와 method 를 작성하시오 -->
-        <!-- 조건 : action = /user/find / method = 데이터 전송 방식 -->
-        <form action="/user/find" method="post">
-            <div class="mb-3">
-                <label class="form-label">이메일</label>
-                <!-- TODO 7. input type 과 name 속성을 작성하시오 -->
-                <input type="email" name="email" class="form-control" placeholder="이메일을 입력하세요" required>
-            </div>
-            <div class="d-grid">
-                <button type="submit" class="btn btn-dark">검색</button>
-            </div>
-        </form>
-
-        <%-- TODO 8. 조회된 유저가 있을 때만 아래 결과를 출력하시오 --%>
-        <%-- 조건 : Controller 에서 "user" 라는 이름으로 데이터를 전달받음 --%>
-        <c:if test="${user != null}">
-            <hr class="mt-4">
-            <h5 class="mt-3 fw-bold">조회 결과</h5>
-            <table class="table mt-3">
-                <tr>
-                    <th>이름</th>
-                        <%-- TODO 9. 유저 이름을 출력하시오 --%>
-                    <td>${user.name}</td>
-                </tr>
-                <tr>
-                    <th>이메일</th>
-                        <%-- TODO 10. 유저 이메일을 출력하시오 --%>
-                    <td>${user.email}</td>
-                </tr>
-                <tr>
-                    <th>가입일</th>
-                        <%-- TODO 11. 유저 가입일을 출력하시오 --%>
-                    <td>${user.create_at}</td>
-                </tr>
-            </table>
-        </c:if>
-
-        <%-- TODO 12. 이메일이 존재하지 않을 때 에러 메시지를 출력하시오 --%>
-        <%-- 조건 : param.error == 'notfound' 일 때 --%>
-        <c:if test="${param.error == 'notfound'}">
-            <div class="alert alert-danger mt-4">존재하지 않는 이메일입니다.</div>
-        </c:if>
-
+        <div class="mb-3">
+            <label class="form-label">이름</label>
+            <input type="text" id="name" class="form-control" placeholder="이름을 입력하세요">
+        </div>
+        <div class="d-grid">
+            <button type="button" class="btn btn-dark" id="searchBtn" onclick="이메일찾기기능()">검색</button>
+        </div>
+        <div id="결과창" class="mt-3"></div>
     </div>
 </div>
 
+<script>
+    async function 이메일찾기기능() {
+        // .변수이름   .메서드이름()
+        const 이름 = document.getElementById("name").value;
+        const 결과창 = document.getElementById("결과창");       // const 결과창  = html문서에서.id값이"결과창"인 태그에 대한 모든 정보 보관
+        const 검색버튼 = document.getElementById("searchBtn"); // const 검색버튼 = html문서에서.id값이"searchBtn"인 태그에 대한 모든 정보 보관
+        // ==  : 타입은 크게 중요하지 않은 상태에서 데이터 비교하여 동일한지 확인 결과 : true / false
+        // === : 타입을 중요하게 생각하는  상태에서 데이터 비교하여 동일한지 확인 결과 : true / false
+        if (이름.trim() === "") {
+            alert("이름을 입력해주세요.");
+            return; // 회사나 개발자가 원하는 요구 조건에 일치하지 않기 때문에 아래 기능을 실행하지 못하게 하기 위하여 돌려보내기
+        }
+        검색버튼.disabled = true;
+        검색버튼.textContent = "검색중입니다.";
+        결과창.innerHTML = `<div class="text-center text-muted">검색중입니다...</div>`;
+
+        try {
+            const 백엔드에서_응답한_데이터 = await fetch("/user/find-email", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({name: 이름})
+            });
+
+            const 결과 = await 백엔드에서_응답한_데이터.json();
+
+            if(결과.email) {
+                결과창.innerHTML = `<div class="alert alert-success">이메일 : ${결과.email}</div>`;
+            } else {
+                결과창.innerHTML = `<div class="alert alert-warning">해당 이름의 유저를 찾을 수 없습니다.</div>`;
+            }
+        } catch (error) {
+            console.log(error);
+            결과창.innerHTML = `<div class="alert alert-danger">오류가 발생했습니다. : 고객센터에 문의하세요.</div>`;
+        } finally {
+            검색버튼.disabled = false;
+            검색버튼.textContent = "검색";
+        }
+
+        // Btn = BuTtoN 에서 가져온 명칭
+    }
+
+
+    /*
+    function 이메일찾기기능() {
+        const 이름 = document.getElementById("name").value;  // 힌트: input id 값
+
+        if (이름.trim() === "") {
+            alert("이름을 입력해주세요.");
+            return;
+        }
+
+        fetch("/user/find-email", {
+                method: POST,  // 힌트: POST
+            headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ name: 이름 })  // 힌트: 이름 변수 넣기
+    })
+    .then(res => res.json())
+            .then(결과 => {
+                const 결과창 = document.getElementById("결과창");
+                if (결과.email) {
+                    // Todo 12: 이메일이 있을 때 결과창에 표시하는 HTML 작성
+                    결과창.innerHTML = <div class="alert alert-success"> 이메일: ${결과.email} </div>;
+                    // 힌트: <div class="alert alert-success"> 이메일: ${결과.email} </div>
+                } else {
+                    // Todo 13: 에러일 때 결과창에 표시하는 HTML 작성
+                    결과창.innerHTML = <div className="alert alert-danger"> 에러 메세지 표시 </div>;
+                    // 힌트: <div class="alert alert-danger"> 에러 메세지 표시 </div>
+                }
+            })
+            .catch(err => console.log("요청 실패:", err));
+    }
+    */
+</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

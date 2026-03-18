@@ -38,7 +38,7 @@ public interface UserMapper {
 
     /**
      *
-     * @param email
+     * @param email ->비밀번호는 Service에서 BCrypt 검증
      * @return
      */
     User  로그인( String email );

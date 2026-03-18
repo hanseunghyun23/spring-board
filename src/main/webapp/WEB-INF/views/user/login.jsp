@@ -36,7 +36,7 @@
             </c:if>
 
             <div class="d-grid mt-4">
-                <button type="button" id="loginBtn" class="btn btn-dark" onclick="로그인기능()" >로그인</button>
+                <button onclick="로그인()" >로그인</button>
             </div>
 
             <div class="text-center mt-3">
@@ -57,7 +57,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous">
-    async function 로그인기능() {
+    async function 로그인() {
 
         // TODO 5-1 : id="email" 인 input 의 value 를 꺼내서 변수에 담으세요.
         //            힌트 : const 이메일 = document.getElementById("____").value;

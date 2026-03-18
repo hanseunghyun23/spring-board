@@ -53,5 +53,65 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>
+<script>
+    let 이메일인증완료 = false;  // 인증 완료 여부 저장 변수
+
+    async function 인증번호발송() {
+        const email = document.getElementById("email").value.trim();
+
+        const res = await fetch("", {
+            method: "",
+            headers: { "Content-Type": "" },
+            body: JSON.stringify({ })
+        });
+
+        if (res.ok) {
+            // TODO : 인증번호 입력란 노출 코드 작성
+        }
+    }
+
+    async function 인증번호확인() {
+        const email = document.getElementById("email").value.trim();
+        const code  = document.getElementById("code").value.trim();
+
+        const res = await fetch("", {
+            method: "",
+            headers: { "Content-Type": "" },
+            body: JSON.stringify({  })
+        });
+
+        if (res.ok) {
+            이메일인증완료 = true;
+            // TODO : 성공 메시지 표시 + 입력란 비활성화 코드 작성
+        } else {
+            // TODO : 실패 메시지 표시 코드 작성
+        }
+    }
+
+    async function 회원가입() {
+        if (!이메일인증완료) {
+            // TODO : 인증 미완료 안내 코드 작성
+            return;
+        }
+
+        const name     = document.getElementById("name").value.trim();
+        const email    = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value.trim();
+
+        const res = await fetch("", {
+            method: "",
+            headers: { "Content-Type": "" },
+            body: JSON.stringify({  })
+        });
+
+        if (res.ok) {
+            // TODO : 성공 시 이동 코드 작성
+        } else {
+            // TODO : 실패 시 에러 메시지 표시 코드 작성
+        }
+    }
+
+
+</script>
 </body>
 </html>

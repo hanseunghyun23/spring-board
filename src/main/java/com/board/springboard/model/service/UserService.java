@@ -1,19 +1,28 @@
 package com.board.springboard.model.service;
 
+import com.board.springboard.common.EmailCodeService;
+import com.board.springboard.common.JwtUtil;
 import com.board.springboard.model.dto.User;
 import com.board.springboard.model.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
+    private  final EmailCodeService emailCodeService;
+    private final Map<String, String> refreshtoken = new ConcurrentHashMap<>();
 
     /**
      * 이메일 중복 여부를 확인하는 메서드
@@ -59,6 +68,7 @@ public class UserService {
         }
         // 이메일 중복체크기능이 false 이고 이메일이 sql에 존재하지 않는게 사실이라면
         // 회원가입을 진행하고
+        user.setPassword(passwordEncoder.encode(user.getPassword())
         userMapper.회원가입(user);
         return true; // sql 에 저장이 완료되었다면 회원가입 완료를 클라이언트에게 전달하겠다.
     }
@@ -71,8 +81,14 @@ public class UserService {
      * @param email 로그인 시 입력한 이메일
      * @return 조회된 User 객체 / 존재하지 않으면 null
      */
-    public User 로그인(String email) {
-        return userMapper.로그인(email);
+    public User 로그인(String email, String inputpwd) {
+        User user = userMapper.로그인(email);
+        if(user == null || !passwordEncoder.matches(inputpwd, user.getPassword())) return null;
+
+        String 엑세스토큰 = jwtUtil.액세스토큰만들기(email);
+        String 리프레시토큰= jwtUtil.리프레시토큰만들기(email);
+        리프레시토큰보관함.put(email, refreshtoken);
+        return Map.of("accessToken",엑세스토큰,"refreshToken",리프레시토큰);
     }
 
 

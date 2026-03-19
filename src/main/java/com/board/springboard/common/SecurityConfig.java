@@ -54,9 +54,12 @@ public class SecurityConfig {
                                 "user/send-code",
                                 "user/verify-code",
                                 "user/token/refresh",
+                                "/board/profile-info",
+                                "/board/**",
+                                "/product/**",
                                 "/css/**","/js/","/images/**", "uploads/**"
                         ).permitAll()
-                                .anyRequest().authenticated() //이외 나머지 주소는 로그인을 한 후 접근할 수 있다
+                                .anyRequest().permitAll() //이외 나머지 주소는 로그인을 한 후 접근할 수 있다
 
                         )//Controller 에서 클라이언트의 접근이 들어오면
                 //무조건 로그인을 해야하는 경우에는 로그인 검증 필터를 최우선으로 실행시키겠다 환경설정

@@ -82,7 +82,7 @@
                     <a class="nav-link" href="/user/register">회원가입</a>
                 </li>
                 <li class="nav-item" id="메뉴_로그인">
-                    <a class="nav-link" href="/user/login" >로그인</a>
+                    <a class="nav-link" href="/user/login">로그인</a>
                 </li>
 
                 <li class="nav-item d-none" id="메뉴_프로필">

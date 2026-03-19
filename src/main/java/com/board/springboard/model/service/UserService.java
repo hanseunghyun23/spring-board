@@ -19,10 +19,10 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public class UserService {
     private final UserMapper userMapper;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtUtil jwtUtil;
-    private  final EmailCodeService emailCodeService;
-    private final Map<String, String> refreshtoken = new ConcurrentHashMap<>();
+    private final PasswordEncoder passwordEncoder;   // 비밀번호 BCrypt 검증
+    private final JwtUtil jwtUtil;                   // 토큰 발급
+    private final EmailCodeService emailCodeService; // 인증번호 발송
+    private final Map<String, String> 리프레시토큰보관함 = new ConcurrentHashMap<>(); // 리프레시 토큰 메모리 저장 30분 or 14일 정도 토큰
 
     /**
      * 이메일 중복 여부를 확인하는 메서드
@@ -68,7 +68,7 @@ public class UserService {
         }
         // 이메일 중복체크기능이 false 이고 이메일이 sql에 존재하지 않는게 사실이라면
         // 회원가입을 진행하고
-        user.setPassword(passwordEncoder.encode(user.getPassword())
+        user.setPassword(passwordEncoder.encode(user.getPassword())); //비밀번호 암호화여 저장
         userMapper.회원가입(user);
         return true; // sql 에 저장이 완료되었다면 회원가입 완료를 클라이언트에게 전달하겠다.
     }
@@ -81,14 +81,20 @@ public class UserService {
      * @param email 로그인 시 입력한 이메일
      * @return 조회된 User 객체 / 존재하지 않으면 null
      */
-    public User 로그인(String email, String inputpwd) {
-        User user = userMapper.로그인(email);
-        if(user == null || !passwordEncoder.matches(inputpwd, user.getPassword())) return null;
-
-        String 엑세스토큰 = jwtUtil.액세스토큰만들기(email);
-        String 리프레시토큰= jwtUtil.리프레시토큰만들기(email);
-        리프레시토큰보관함.put(email, refreshtoken);
-        return Map.of("accessToken",엑세스토큰,"refreshToken",리프레시토큰);
+    public Map<String, String> 로그인(String email, String 입력비밀번호) {
+        User user = userMapper.로그인(email); // db에서 해당 유저의 이메일이 존재하는지 확인한다.
+        // 유저 정보가 없거나 유저가입력한 비밀번호 암호화한 것 과  db 에 저장된  암호화비밀번호가  같지 않다면 null 반환
+        // 스프링에서 만든 비밀번호 맞는지 확인하는 보안 코드 로직에 의해 아래와 같이 기입해주면 확인처리 해줄 것
+        // .matches(웹사이트에서 유저가 입력한 비밀번호를 암호화 처리, DB에 저장된 암호화 비밀번호)
+        //                                       클라이언트   DB에 저장된 비밀번호
+        if(user == null || !passwordEncoder.matches(입력비밀번호, user.getPassword())) return null;
+        // 위 만약에서 걸리지 않으면 본인인증이 확인된 유저의 토큰 생성
+        String 액세스토큰 = jwtUtil.액세스토큰만들기(email); // 30분 유효 토큰
+        String 리프레시토큰 = jwtUtil.리프레시토큰만들기(email); // 14일 유효 토큰     둘 중 하나 사용해도 되며,
+        // 개발자는 액세스토큰으로 웹사이트를 운영할 것인지 리프레시토큰으로 운영할 것인지 판단 후 둘 중 하나 사용할것
+        // 크롬 = 리프레시 토큰 네이버 다음 = 액세스 토큰 형태 유효기간은 개발자와 회사에서 지정한 규정대로 설정한다.
+        리프레시토큰보관함.put(email, 리프레시토큰);
+        return Map.of("accessToken", 액세스토큰, "refreshToken",리프레시토큰);
     }
 
 
@@ -100,13 +106,14 @@ public class UserService {
      * @return 조회된 User 객체 / 없으면 null
      */
     public User 이메일로유저찾기(String email) {
+
         return userMapper.이메일로유저찾기(email);
     }
 
 
     /**
      * 프로필 사진 업로드 및 DB 저장 <br/>
-     * <p>
+     *
      * 처리 순서 :  <br/>
      * 1. 업로드된 파일이 비어있는지 확인 <br/>
      * 2. 저장 폴더가 없으면 자동 생성(서버 재시작 재부팅 시 안전하게 이미지를 가져올 수 있다. <br/>
@@ -115,21 +122,21 @@ public class UserService {
      * 5. DB의 profile_img 컬럼에 웹 접근 경로 저장 <br/>
      * 6. 세션 갱신을 위해 수정된 최신 User 데이터 객체 반환 <br/>
      *
-     * @param loginUser  현재 로그인 되어있는 세션에서 꺼낸 현재 로그인 유저의 정보가 담겨있는 변수공간의 명칭
-     * @param imageFile  < input type="file" > 로 전달된 MultipartFile
-     * @param uploadPath 파일을 저장할 서버 절대경로(application.properties 에서 설정하고, 설정된 키이름 경로 가져올 것)
+     * @param  loginUser  현재 로그인 되어있는 세션에서 꺼낸 현재 로그인 유저의 정보가 담겨있는 변수공간의 명칭
+     * @param  imageFile  < input type="file" > 로 전달된 MultipartFile
+     * @param  uploadPath 파일을 저장할 서버 절대경로(application.properties 에서 설정하고, 설정된 키이름 경로 가져올 것)
      * @return 프로필 사진 경로가 반영된 최신 유저 정보를 다시 웹사이트로 반환
      * @throws java.io.IOException 파일 저장에 실패할 경우를 대비
      */
-    public User 프로필사진업로드(User loginUser, MultipartFile imageFile, String uploadPath) throws IOException {
+    public User  프로필사진업로드(User loginUser, MultipartFile imageFile, String uploadPath) throws IOException {
 
         // 1. 파일이 비어있으면 업로드 처리 없이 현재 유저 그대로 반환
-        if (imageFile == null || imageFile.isEmpty()) return loginUser; // if() {} 중괄호 내부 코드가 1줄일 경우 {} 생략 가능
+        if(imageFile == null || imageFile.isEmpty()) return loginUser; // if() {} 중괄호 내부 코드가 1줄일 경우 {} 생략 가능
 
 
         // 2. 프로필을 저장하는 경로에 폴더들이 존재하지 않을 경우
         File 폴더 = new File(uploadPath);
-        if (!폴더.exists()) 폴더.mkdirs();
+        if(!폴더.exists()) 폴더.mkdirs();
         // !폴더 = 폴더가 존재하지 않는게 사실이라면 = true 라면
         // .mkdirs() 전체경로에서 존재하지 않는 폴더들 모~두 생성
         // .mkdir() 마지막에 해당하는 폴더만 생성 / 마지막까지 도달하는데 존재하지 않는 폴더가 있을 경우 에러가 발생하여
@@ -138,8 +145,8 @@ public class UserService {
         // 3. 파일명 : 충돌 방지 : UUID + 원본 확장자
         //    원본파일명 : profile.jpg -> 저장파일명 : 랜덤문자와숫자들.jpg
         String 원본파일이름 = imageFile.getOriginalFilename();                             // 예 : my_photo.png
-        String 확장자 = 원본파일이름.substring(원본파일이름.lastIndexOf("."));  // .png 데이터만 확장자 공간에 담겨지게된다.
-        String 저장할파일 = UUID.randomUUID().toString() + 확장자;                     //  랜덤으로만들어진_파일이름.png
+        String 확장자       = 원본파일이름.substring(원본파일이름.lastIndexOf("."));  // .png 데이터만 확장자 공간에 담겨지게된다.
+        String 저장할파일   = UUID.randomUUID().toString() + 확장자;                     //  랜덤으로만들어진_파일이름.png
 
         // 4. 서버 디스크에 파일 저장
         File 파일저장 = new File(uploadPath + "/" + 저장할파일);
@@ -159,14 +166,31 @@ public class UserService {
 
     }
 
-
-
     public User 유저단건조회(int id) {
         return userMapper.유저단건조회(id);
     }
 
-    // TODO 3: 빈칸을 채우세요
     public void 유저정보수정(User user) {
-       userMapper.유저정보수정(user);
+        userMapper.유저정보수정(user);
+    }
+
+    public void 인증번호발송(String email) {
+        emailCodeService.인증번호발송(email);
+    }
+    public boolean 인증번호검증(String email, String code){
+        return emailCodeService.인증번호확인(email, code);
+
+    }
+
+    public String 토큰재발급(String 리프레시토큰)
+    {
+        if(!jwtUtil.유효토큰인지확인하는기능(리프레시토큰)) return null;
+        String email=jwtUtil.이메일가져오기(리프레시토큰);
+        String stored = 리프레시토큰보관함.get(email);
+        if(!리프레시토큰.equals(stored)) return null;
+        return jwtUtil.액세스토큰만들기(email);
+    }
+    public void 로그아웃(String email){
+        리프레시토큰보관함.remove(email);
     }
 }

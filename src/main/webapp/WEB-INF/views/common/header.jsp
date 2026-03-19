@@ -3,55 +3,93 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="utf-8" %>
 <!DOCTYPE html>
 <html lang="ko">
-<head>s
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Spring Board</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <style>
-        body {
-            background-color: #f8f9fa;
-        }
-
-        .hero {
-            background-color: #ffffff;
-            border-bottom: 1px solid #e9ecef;
-            padding: 80px 0;
-        }
-
-        .card {
-            border: none;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-            transition: transform;
-        }
-
-        .card:hover {
-            transform: translateY(-4px);
-        }
+        body { background-color: #f8f9fa; }
+        .hero { background-color: #ffffff; border-bottom: 1px solid #e9ecef; padding: 80px 0; }
+        .card { border: none; box-shadow: 0 2px 8px rgba(0,0,0,0.06); transition: transform; }
+        .card:hover { transform: translateY(-4px); }
     </style>
 </head>
 <body>
 
-<ul class="navbar-nav ms-auto">
-    <li class="nav-item">
-        <a class="nav-link" href="/board/list">게시판</a>
-    </li>
-    <c:if test="${empty sessionScope.loginUser}">
-        <li class="nav-item">
-            <a class="nav-link" href="/user/register">회원가입</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="/user/login">로그인</a>
-        </li>
-    </c:if>
-    <c:if test="${not empty sessionScope.loginUser}">
-        <li class="nav-item">
-            <span class="nav-link">${sessionScope.loginUser.name}님 환영해요!</span>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="/user/logout">로그아웃</a>
-        </li>
-    </c:if>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
 
-</ul>
+        <a class="navbar-brand" href="/">SpringBoard</a>
+
+        <button class="navbar-toggler" type="button"
+                data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false">
+
+        </button>
+
+
+            <ul class="navbar-nav ms-auto">
+
+                <li class="nav-item">
+                    <a class="nav-link" href="/board/list">게시판</a>
+                </li>
+
+                <%-- TODO 5 정답 - 제품 목록 링크 추가 --%>
+                <li class="nav-item">
+                    <a class="nav-link" href="/product/list">제품목록</a>
+                </li>
+
+                <c:if test="${empty sessionScope.loginUser}">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/register">회원가입</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/login">로그인</a>
+                    </li>
+                </c:if>
+
+                <c:if test="${not empty sessionScope.loginUser}">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/profile"><span id="유저이름">님 환영해요!</span></a>
+                        <!--   <span class="nav-link">${sessionScope.loginUser.name}님 환영해요!</span> -->
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="로그아웃()">로그아웃</a>
+                    </li>
+                </c:if>
+
+            </ul>
+        </div>
+
+    </div>
+</nav>
+
+<script>
+    //async 비동기= 이 코드 안에 잠시 멈추고 백엔드 결과를 기다려야한다는 코드가 들어있다.
+    async function 로그인상태확인(){
+        try{
+         const res = await  fetch("/user/profile-info", {method:"GET"})
+            if(res.ok){
+                const data = await res.json()
+                document.getElementById("메뉴_회원가입").classList.add("d-none");
+                document.getElementById("메뉴_로그인").classList.add("d-none");
+                document.getElementById("메뉴_프로필").classList.remove("d-none");
+                document.getElementById("메뉴_로그아웃").classList.remove("d-none");
+                document.getElementById("유저이름").textContent = data.name;
+                //querySelector 이용해 .아이디이름 #클래스이름 태그이름을 모두 작성할 수 있는 기능
+                //css문법에서 아이디이름 클래스이름 태그이름 사용을 그대로 똑같이 사용
+          }
+        }
+
+        catch(e){
+            console.log(e)
+        }
+        async function 로그아웃(){
+            await fetch(("/user/logout"),{method:POST});
+            window.location.href="/";
+        }
+        로그인상태확인();
+    }
+
